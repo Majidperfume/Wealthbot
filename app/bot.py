@@ -1,4 +1,4 @@
-from telegram.ext import (
+    from telegram.ext import (
     Application,
     CommandHandler,
     MessageHandler,
@@ -8,7 +8,13 @@ from telegram.ext import (
 from config import BOT_TOKEN
 
 from handlers.start import start_command
-from handlers.accounts import accounts_menu, list_accounts
+
+from handlers.accounts import (
+    accounts_menu,
+    list_accounts,
+    add_account_start,
+    add_account_receive
+)
 
 
 def create_bot():
@@ -18,6 +24,7 @@ def create_bot():
     ).build()
 
 
+    # start command
     app.add_handler(
         CommandHandler(
             "start",
@@ -26,6 +33,7 @@ def create_bot():
     )
 
 
+    # accounts menu
     app.add_handler(
         MessageHandler(
             filters.TEXT & filters.Regex("^🏦 حساب‌ها$"),
@@ -34,10 +42,29 @@ def create_bot():
     )
 
 
+    # list accounts
     app.add_handler(
         MessageHandler(
             filters.TEXT & filters.Regex("^📋 لیست حساب‌ها$"),
             list_accounts
+        )
+    )
+
+
+    # add account button
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT & filters.Regex("^➕ افزودن حساب$"),
+            add_account_start
+        )
+    )
+
+
+    # receive account name
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT & ~filters.COMMAND,
+            add_account_receive
         )
     )
 
