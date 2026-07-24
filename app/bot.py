@@ -23,6 +23,10 @@ from handlers.currencies import (
     add_currency_receive
 )
 
+from handlers.asset_menu import (
+    assets_menu
+)
+
 
 def create_bot():
 
@@ -93,6 +97,18 @@ def create_bot():
         MessageHandler(
             filters.TEXT & filters.Regex("^➕ افزودن ارز$"),
             add_currency_start
+        )
+    )
+
+
+    # =================
+    # Assets
+    # =================
+
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT & filters.Regex("^📦 دارایی‌ها$"),
+            assets_menu
         )
     )
 
