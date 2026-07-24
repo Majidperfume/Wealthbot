@@ -28,21 +28,31 @@ class Transaction:
 
 
     @staticmethod
-    def add_entry(transaction_id, asset_id, amount):
+    def add_entry(
+        transaction_id,
+        asset_id,
+        amount,
+        price=0,
+        total_value=0
+    ):
         db.execute(
             """
             INSERT INTO transaction_entries
             (
                 transaction_id,
                 asset_id,
-                amount
+                amount,
+                price,
+                total_value
             )
-            VALUES (?, ?, ?)
+            VALUES (?, ?, ?, ?, ?)
             """,
             (
                 transaction_id,
                 asset_id,
                 amount,
+                price,
+                total_value,
             ),
         )
 
@@ -64,17 +74,26 @@ class Transaction:
         return db.fetchall(
             """
             SELECT
+
                 transaction_entries.*,
+
                 assets.name AS asset_name,
+
                 currencies.code AS currency
+
 
             FROM transaction_entries
 
+
             JOIN assets
+
             ON transaction_entries.asset_id = assets.id
 
+
             JOIN currencies
+
             ON assets.currency_id = currencies.id
+
 
             WHERE transaction_id = ?
 
@@ -88,9 +107,13 @@ class Transaction:
         return db.fetchall(
             """
             SELECT *
+
             FROM transactions
+
             WHERE active = 1
+
             ORDER BY transaction_date DESC
+
             """
         )
 
@@ -100,8 +123,11 @@ class Transaction:
         db.execute(
             """
             UPDATE transactions
+
             SET active = 0
+
             WHERE id = ?
+
             """,
             (transaction_id,),
         )
