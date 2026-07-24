@@ -1,15 +1,22 @@
 from handlers.asset_handler import get_assets
 
 
-def assets_menu():
+async def assets_menu(update, context):
+
     assets = get_assets()
 
     if not assets:
-        return "هنوز هیچ دارایی ثبت نشده است."
+        await update.message.reply_text(
+            "هنوز هیچ دارایی ثبت نشده است."
+        )
+        return
+
 
     text = "📦 دارایی‌ها:\n\n"
 
+
     for asset in assets:
+
         text += (
             f"ID: {asset['id']}\n"
             f"نام: {asset['name']}\n"
@@ -18,4 +25,5 @@ def assets_menu():
             f"----------------\n"
         )
 
-    return text
+
+    await update.message.reply_text(text)
