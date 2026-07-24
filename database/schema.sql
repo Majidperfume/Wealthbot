@@ -178,6 +178,10 @@ CREATE TABLE IF NOT EXISTS transaction_entries (
 
     amount REAL NOT NULL,
 
+    price REAL DEFAULT 0,
+
+    total_value REAL DEFAULT 0,
+
 
     FOREIGN KEY(transaction_id)
         REFERENCES transactions(id),
