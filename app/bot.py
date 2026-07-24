@@ -18,7 +18,9 @@ from handlers.accounts import (
 
 from handlers.currencies import (
     currencies_menu,
-    list_currencies
+    list_currencies,
+    add_currency_start,
+    add_currency_receive
 )
 
 
@@ -29,6 +31,8 @@ def create_bot():
     ).build()
 
 
+    # Start
+
     app.add_handler(
         CommandHandler(
             "start",
@@ -37,7 +41,9 @@ def create_bot():
     )
 
 
-    # accounts
+    # =================
+    # Accounts
+    # =================
 
     app.add_handler(
         MessageHandler(
@@ -63,7 +69,9 @@ def create_bot():
     )
 
 
-    # currencies
+    # =================
+    # Currencies
+    # =================
 
     app.add_handler(
         MessageHandler(
@@ -81,12 +89,30 @@ def create_bot():
     )
 
 
-    # receive account name
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT & filters.Regex("^➕ افزودن ارز$"),
+            add_currency_start
+        )
+    )
+
+
+    # =================
+    # Receiving text inputs
+    # =================
 
     app.add_handler(
         MessageHandler(
             filters.TEXT & ~filters.COMMAND,
             add_account_receive
+        )
+    )
+
+
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT & ~filters.COMMAND,
+            add_currency_receive
         )
     )
 
