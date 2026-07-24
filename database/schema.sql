@@ -1,10 +1,11 @@
 PRAGMA foreign_keys = ON;
 
+
 ----------------------------------------------------
--- ACCOUNTS
+-- ASSET TYPES
 ----------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS accounts (
+CREATE TABLE IF NOT EXISTS asset_types (
 
     id INTEGER PRIMARY KEY AUTOINCREMENT,
 
@@ -12,11 +13,10 @@ CREATE TABLE IF NOT EXISTS accounts (
 
     description TEXT DEFAULT '',
 
-    active INTEGER DEFAULT 1,
-
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    active INTEGER DEFAULT 1
 
 );
+
 
 ----------------------------------------------------
 -- CURRENCIES
@@ -26,17 +26,47 @@ CREATE TABLE IF NOT EXISTS currencies (
 
     id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-    name TEXT NOT NULL,
-
     code TEXT NOT NULL UNIQUE,
+
+    name TEXT NOT NULL,
 
     symbol TEXT DEFAULT '',
 
-    active INTEGER DEFAULT 1,
-
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    active INTEGER DEFAULT 1
 
 );
+
+
+----------------------------------------------------
+-- ASSETS
+----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS assets (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    name TEXT NOT NULL,
+
+    asset_type_id INTEGER NOT NULL,
+
+    currency_id INTEGER NOT NULL,
+
+    note TEXT DEFAULT '',
+
+    active INTEGER DEFAULT 1,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+
+    FOREIGN KEY(asset_type_id)
+        REFERENCES asset_types(id),
+
+
+    FOREIGN KEY(currency_id)
+        REFERENCES currencies(id)
+
+);
+
 
 ----------------------------------------------------
 -- PERSONS
@@ -48,7 +78,7 @@ CREATE TABLE IF NOT EXISTS persons (
 
     name TEXT NOT NULL,
 
-    phone TEXT DEFAULT '',
+    relation TEXT DEFAULT '',
 
     note TEXT DEFAULT '',
 
@@ -58,35 +88,44 @@ CREATE TABLE IF NOT EXISTS persons (
 
 );
 
+
 ----------------------------------------------------
--- CATEGORIES
+-- PROJECTS
 ----------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS categories (
+CREATE TABLE IF NOT EXISTS projects (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    name TEXT NOT NULL,
+
+    description TEXT DEFAULT '',
+
+    active INTEGER DEFAULT 1,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+);
+
+
+----------------------------------------------------
+-- TRANSACTION TEMPLATES
+----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS transaction_templates (
 
     id INTEGER PRIMARY KEY AUTOINCREMENT,
 
     name TEXT NOT NULL UNIQUE,
 
-    icon TEXT DEFAULT '',
+    requires_source INTEGER DEFAULT 1,
+
+    requires_destination INTEGER DEFAULT 1,
 
     active INTEGER DEFAULT 1
 
 );
 
-----------------------------------------------------
--- TRANSACTION TYPES
-----------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS transaction_types (
-
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-    name TEXT NOT NULL UNIQUE,
-
-    active INTEGER DEFAULT 1
-
-);
 
 ----------------------------------------------------
 -- TRANSACTIONS
@@ -96,17 +135,11 @@ CREATE TABLE IF NOT EXISTS transactions (
 
     id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-    transaction_type_id INTEGER,
+    template_id INTEGER,
 
-    category_id INTEGER,
-
-    account_id INTEGER,
-
-    currency_id INTEGER,
+    project_id INTEGER,
 
     person_id INTEGER,
-
-    amount REAL NOT NULL,
 
     note TEXT DEFAULT '',
 
@@ -114,22 +147,47 @@ CREATE TABLE IF NOT EXISTS transactions (
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY(transaction_type_id)
-        REFERENCES transaction_types(id),
+    active INTEGER DEFAULT 1,
 
-    FOREIGN KEY(category_id)
-        REFERENCES categories(id),
 
-    FOREIGN KEY(account_id)
-        REFERENCES accounts(id),
+    FOREIGN KEY(template_id)
+        REFERENCES transaction_templates(id),
 
-    FOREIGN KEY(currency_id)
-        REFERENCES currencies(id),
+
+    FOREIGN KEY(project_id)
+        REFERENCES projects(id),
+
 
     FOREIGN KEY(person_id)
         REFERENCES persons(id)
 
 );
+
+
+----------------------------------------------------
+-- TRANSACTION ENTRIES
+----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS transaction_entries (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    transaction_id INTEGER NOT NULL,
+
+    asset_id INTEGER NOT NULL,
+
+    amount REAL NOT NULL,
+
+
+    FOREIGN KEY(transaction_id)
+        REFERENCES transactions(id),
+
+
+    FOREIGN KEY(asset_id)
+        REFERENCES assets(id)
+
+);
+
 
 ----------------------------------------------------
 -- SETTINGS
