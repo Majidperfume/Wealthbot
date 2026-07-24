@@ -19,10 +19,21 @@ class TransactionService:
         )
 
         for entry in entries:
+
+            amount = entry["amount"]
+            price = entry.get("price", 0)
+
+            total_value = entry.get(
+                "total_value",
+                amount * price
+            )
+
             Transaction.add_entry(
                 transaction_id=transaction_id,
                 asset_id=entry["asset_id"],
-                amount=entry["amount"],
+                amount=amount,
+                price=price,
+                total_value=total_value,
             )
 
         return transaction_id
