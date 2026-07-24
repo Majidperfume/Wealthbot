@@ -133,9 +133,3 @@ def run_bot():
 
 if __name__ == "__main__":
     run_bot()
-
-from handlers.asset_menu import assets_menu
-
-
-def show_assets():
-    return assets_menu()
