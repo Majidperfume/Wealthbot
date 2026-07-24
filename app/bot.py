@@ -1,4 +1,4 @@
-    from telegram.ext import (
+from telegram.ext import (
     Application,
     CommandHandler,
     MessageHandler,
@@ -16,6 +16,11 @@ from handlers.accounts import (
     add_account_receive
 )
 
+from handlers.currencies import (
+    currencies_menu,
+    list_currencies
+)
+
 
 def create_bot():
 
@@ -24,7 +29,6 @@ def create_bot():
     ).build()
 
 
-    # start command
     app.add_handler(
         CommandHandler(
             "start",
@@ -33,7 +37,8 @@ def create_bot():
     )
 
 
-    # accounts menu
+    # accounts
+
     app.add_handler(
         MessageHandler(
             filters.TEXT & filters.Regex("^🏦 حساب‌ها$"),
@@ -42,7 +47,6 @@ def create_bot():
     )
 
 
-    # list accounts
     app.add_handler(
         MessageHandler(
             filters.TEXT & filters.Regex("^📋 لیست حساب‌ها$"),
@@ -51,7 +55,6 @@ def create_bot():
     )
 
 
-    # add account button
     app.add_handler(
         MessageHandler(
             filters.TEXT & filters.Regex("^➕ افزودن حساب$"),
@@ -60,7 +63,26 @@ def create_bot():
     )
 
 
+    # currencies
+
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT & filters.Regex("^💱 ارزها$"),
+            currencies_menu
+        )
+    )
+
+
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT & filters.Regex("^📋 لیست ارزها$"),
+            list_currencies
+        )
+    )
+
+
     # receive account name
+
     app.add_handler(
         MessageHandler(
             filters.TEXT & ~filters.COMMAND,
